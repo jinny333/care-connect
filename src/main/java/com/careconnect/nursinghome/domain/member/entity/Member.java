@@ -3,7 +3,6 @@ package com.careconnect.nursinghome.domain.member.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import javax.management.relation.Role;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
