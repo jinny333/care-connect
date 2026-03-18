@@ -51,4 +51,12 @@ public class Facility {
         this.operatingHours = operatingHours;
         this.introduction = introduction;
     }
+
+    public void update(String name, String address, Double latitude, Double longitude, String operatingHours) {
+        this.name = name;
+        this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.operatingHours = operatingHours;
+    }
 }
