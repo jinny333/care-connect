@@ -47,4 +47,10 @@ public class Member {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
+
+    public void update(String name, String phoneNumber) {
+        if (name != null) this.name = name;
+        if (phoneNumber != null) this.phoneNumber = phoneNumber;
+        this.updatedAt = LocalDateTime.now(); // 수정 시간 업데이트
+    }
 }
