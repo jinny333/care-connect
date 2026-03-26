@@ -8,7 +8,10 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Member {
 
     @Id
@@ -30,6 +33,9 @@ public class Member {
     // 생성일시와 수정일시는 보통 LocalDateTime을 써!
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    @Column(length = 500)
+    private String refreshToken;
 
     @Builder
     public Member(Role role, String name, String email, String password, String phoneNumber,
@@ -53,4 +59,17 @@ public class Member {
         if (phoneNumber != null) this.phoneNumber = phoneNumber;
         this.updatedAt = LocalDateTime.now(); // 수정 시간 업데이트
     }
+
+    @Enumerated(EnumType.STRING)
+    private MemberStatus status = MemberStatus.ACTIVE; // 기본값은 활동 중(ACTIVE)
+    private LocalDateTime withdrawnAt; //탈퇴날짜
+
+    public enum MemberStatus {
+        ACTIVE, WITHDRAWN
+    }
+
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
 }

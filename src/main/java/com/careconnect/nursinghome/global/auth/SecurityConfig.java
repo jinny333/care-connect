@@ -3,17 +3,29 @@ package com.careconnect.nursinghome.global.auth;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
+    private final JwtTokenProvider jwtTokenProvider;
+    private final RedisTemplate<String, String> redisTemplate;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    public SecurityConfig(JwtTokenProvider jwtTokenProvider,
+                          RedisTemplate<String, String> redisTemplate,
+                          JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.redisTemplate = redisTemplate;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -21,18 +33,17 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    // SecurityConfig.java 수정 부분
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // API 서버라 CSRF는 꺼둘게요
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // JWT 쓸 거라 세션 안 써요
-
-                .authorizeHttpRequests(auth -> auth
-                        // 1. 회원가입과 로그인은 '누구나' 접근 가능하게 열어줘!
-                        .requestMatchers("/api/v1/members/signup", "/api/v1/auth/login").permitAll()
-                        // 2. 나머지는 나중에 '인증'된 사람만 쓰게 할 거야 (지금은 테스트를 위해 일단 다 열어둘게요)
-                        .anyRequest().permitAll()
-                );
+                .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화 (테스트용)
+                .authorizeHttpRequests(auth -> auth // ⭐ 이 람다식 안에서 적어줘야 해요!
+                        .requestMatchers("/api/v1/members/signup", "/api/v1/auth/**").permitAll() // 누구나 접근 가능
+                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                        .anyRequest().authenticated() // 나머지는 로그인 필수
+                )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

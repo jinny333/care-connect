@@ -20,4 +20,11 @@ public class AuthController {
         TokenResponseDto tokenResponse = authService.login(loginRequest);
         return ResponseEntity.ok(tokenResponse);
     }
+
+    @PostMapping("/reissue")
+    public ResponseEntity<TokenResponseDto> reissue(@RequestBody String refreshToken) {
+        // AuthService에 아까 만든 reissue 로직을 호출합니다!
+        TokenResponseDto tokenResponse = authService.reissue(refreshToken);
+        return ResponseEntity.ok(tokenResponse);
+    }
 }

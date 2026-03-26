@@ -50,6 +50,9 @@ dependencies {
 
 	// 로깅 도구가 없다고 하니 강제로 넣어줍니다!
 	implementation 'org.jboss.logging:jboss-logging:3.5.3.Final'
+
+	//redis와 대화
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 tasks.named('test') {

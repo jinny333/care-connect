@@ -15,6 +15,10 @@ public class JwtTokenProvider {
     private final Key key;
     private final long accessTokenValidity;
 
+    // 1. 유효기간 변수 추가 (보통 7일~14일)
+    @Value("${jwt.refresh-token-validity-in-seconds}")
+    private long refreshTokenValidity;
+
     public JwtTokenProvider(@Value("${jwt.secret}") String secretKey,
                             @Value("${jwt.access-token-validity-in-seconds}") long accessTokenValidity) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
@@ -61,5 +65,56 @@ public class JwtTokenProvider {
             // 잘못된 토큰
         }
         return false;
+    }
+
+    // 토큰의 남은 유효 시간(ms) 추출
+    public long getExpiration(String token) {
+        Date expiration = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getExpiration();
+
+        // 현재 시간과 만료 시간의 차이를 계산
+        long now = new Date().getTime();
+        return (expiration.getTime() - now);
+    }
+
+    // 2. Refresh Token 생성 메서드
+    public String createRefreshToken(Long memberId) {
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + refreshTokenValidity * 1000);
+
+        return Jwts.builder()
+                .setSubject(memberId.toString()) // 누구 건지 기록
+                .setIssuedAt(now)
+                .setExpiration(validity)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public org.springframework.security.core.Authentication getAuthentication(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        // 1. 토큰에 저장된 role 꺼내기 (지나 님이 createToken할 때 넣었던 그 "role"!)
+        String role = claims.get("role").toString();
+
+        // 2. 스프링 시큐리티가 이해할 수 있게 ROLE_ADMIN 형태로 변환
+        java.util.Collection<? extends org.springframework.security.core.GrantedAuthority> authorities =
+                java.util.Arrays.stream(role.split(","))
+                        .map(r -> new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + r))
+                        .collect(java.util.stream.Collectors.toList());
+
+        // 3. 유저 정보를 담은 객체 생성 (비밀번호는 보안상 빈 값 "")
+        org.springframework.security.core.userdetails.User principal =
+                new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities);
+
+        // 4. 최종 인증 객체 반환
+        return new org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken(principal, token, authorities);
     }
 }
