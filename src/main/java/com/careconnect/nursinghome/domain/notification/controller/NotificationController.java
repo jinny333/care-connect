@@ -2,6 +2,7 @@ package com.careconnect.nursinghome.domain.notification.controller;
 import com.careconnect.nursinghome.domain.notification.dto.NotificationRequestDto;
 import com.careconnect.nursinghome.domain.notification.dto.NotificationResponseDto;
 import com.careconnect.nursinghome.domain.notification.service.NotificationService;
+import com.careconnect.nursinghome.global.common.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,27 +16,29 @@ public class NotificationController {
     private final NotificationService service;
 
     @PostMapping
-    public NotificationResponseDto create(@RequestBody NotificationRequestDto dto) {
-        return service.create(dto);
+    public ApiResponse<NotificationResponseDto> create(@RequestBody NotificationRequestDto dto) {
+        return ApiResponse.ok(service.create(dto));
     }
 
     @GetMapping("/member/{memberId}")
-    public List<NotificationResponseDto> getByMember(@PathVariable Long memberId) {
-        return service.getByMember(memberId);
+    public ApiResponse<List<NotificationResponseDto>> getByMember(@PathVariable Long memberId) {
+        return ApiResponse.ok(service.getByMember(memberId));
     }
 
     @GetMapping("/member/{memberId}/unread")
-    public List<NotificationResponseDto> getUnread(@PathVariable Long memberId) {
-        return service.getUnread(memberId);
+    public ApiResponse<List<NotificationResponseDto>> getUnread(@PathVariable Long memberId) {
+        return ApiResponse.ok(service.getUnread(memberId));
     }
 
     @PatchMapping("/{id}/read")
-    public void read(@PathVariable Long id) {
+    public ApiResponse<Void> read(@PathVariable Long id) {
         service.read(id);
+        return ApiResponse.ok(null);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public ApiResponse<Void> delete(@PathVariable Long id) {
         service.delete(id);
+        return ApiResponse.ok(null);
     }
 }

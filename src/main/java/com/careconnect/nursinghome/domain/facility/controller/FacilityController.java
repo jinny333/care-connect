@@ -3,6 +3,7 @@ package com.careconnect.nursinghome.domain.facility.controller;
 import com.careconnect.nursinghome.domain.facility.dto.FacilityRequest;
 import com.careconnect.nursinghome.domain.facility.dto.FacilityResponse;
 import com.careconnect.nursinghome.domain.facility.service.FacilityService;
+import com.careconnect.nursinghome.global.common.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,34 +16,32 @@ public class FacilityController {
 
     private final FacilityService facilityService;
 
-    // 1. 시설 등록
     @PostMapping
-    public Long createFacility(@RequestBody FacilityRequest request) {
-        return facilityService.createFacility(request);
+    public ApiResponse<Long> createFacility(@RequestBody FacilityRequest request) {
+        return ApiResponse.ok(facilityService.createFacility(request));
     }
 
-    // 2. 시설 전체 조회
     @GetMapping
-    public List<FacilityResponse> getFacilities() {
-        return facilityService.getFacilities();
+    public ApiResponse<List<FacilityResponse>> getFacilities() {
+        return ApiResponse.ok(facilityService.getFacilities());
     }
 
-    // 3. 시설 단건 조회
     @GetMapping("/{id}")
-    public FacilityResponse getFacility(@PathVariable Long id) {
-        return facilityService.getFacility(id);
+    public ApiResponse<FacilityResponse> getFacility(@PathVariable Long id) {
+        return ApiResponse.ok(facilityService.getFacility(id));
     }
 
-    // 4. 시설 수정
     @PutMapping("/{id}")
-    public void updateFacility(@PathVariable Long id,
-                               @RequestBody FacilityRequest request) {
+    public ApiResponse<Void> updateFacility(@PathVariable Long id,
+                                            @RequestBody FacilityRequest request) {
         facilityService.updateFacility(id, request);
+        return ApiResponse.ok(null);
     }
 
-    // 5. 시설 삭제
     @DeleteMapping("/{id}")
-    public void deleteFacility(@PathVariable Long id) {
+    public ApiResponse<Void> deleteFacility(@PathVariable Long id) {
         facilityService.deleteFacility(id);
+        return ApiResponse.ok(null);
     }
+
 }
