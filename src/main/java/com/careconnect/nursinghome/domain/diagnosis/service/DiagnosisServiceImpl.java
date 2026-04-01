@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -16,11 +17,9 @@ public class DiagnosisServiceImpl implements DiagnosisService {
 
     @Override
     public Diagnosis create(Diagnosis diagnosis) {
-
-        // 생성 시간 세팅
         diagnosis.setCreatedAt(LocalDateTime.now());
+        diagnosis.setDiagnosisDate(LocalDateTime.now()); // 추가
 
-        // 🔥 핵심: detail에 부모 연결
         if (diagnosis.getDetails() != null) {
             for (DiagnosisDetail detail : diagnosis.getDetails()) {
                 detail.setDiagnosis(diagnosis);
@@ -34,5 +33,19 @@ public class DiagnosisServiceImpl implements DiagnosisService {
     public Diagnosis getById(Long id) {
         return diagnosisRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Diagnosis not found"));
+    }
+
+    @Override
+    public List<Diagnosis> getByMember(Long memberId) {
+        return diagnosisRepository.findByMemberId(memberId);
+    }
+
+    @Override
+    public void update(Long id, Diagnosis diagnosis) {
+        Diagnosis existing = diagnosisRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Diagnosis not found"));
+        existing.setRiskResult(diagnosis.getRiskResult());
+        existing.setTotalScore(diagnosis.getTotalScore());
+        diagnosisRepository.save(existing);
     }
 }

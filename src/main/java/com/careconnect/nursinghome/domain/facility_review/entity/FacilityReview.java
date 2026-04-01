@@ -36,4 +36,11 @@ public class FacilityReview {
         this.writtenAt = LocalDateTime.now();
         this.isReported = false;
     }
+
+    public void update(Integer rating, String content, String imageUrl) {
+        this.rating = rating;
+        this.content = content;
+        this.imageUrl = imageUrl;
+        this.writtenAt = LocalDateTime.now();
+    }
 }

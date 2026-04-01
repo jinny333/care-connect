@@ -2,6 +2,8 @@ package com.careconnect.nursinghome.domain.facility_review.dto;
 
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Getter
 public class FacilityReviewRequestDto {
 
@@ -12,4 +14,6 @@ public class FacilityReviewRequestDto {
     private Integer rating;
     private String content;
     private String imageUrl;
+    private Object writtenAt;
+
 }

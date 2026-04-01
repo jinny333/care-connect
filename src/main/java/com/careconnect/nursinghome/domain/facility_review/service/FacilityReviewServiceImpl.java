@@ -45,7 +45,6 @@ public class FacilityReviewServiceImpl implements FacilityReviewService {
                 .collect(Collectors.toList());
     }
 
-    // 🔥 변환 메서드 핵심
     private FacilityReviewResponseDto toDto(FacilityReview review) {
         return FacilityReviewResponseDto.builder()
                 .id(review.getId())
@@ -56,7 +55,20 @@ public class FacilityReviewServiceImpl implements FacilityReviewService {
                 .adminReply(review.getAdminReply())
                 .imageUrl(review.getImageUrl())
                 .isReported(review.getIsReported())
+                .writtenAt(review.getWrittenAt()) // 추가
                 .createdAt(review.getCreatedAt())
                 .build();
+    }
+    @Override
+    public void update(Long id, FacilityReviewRequestDto dto) {
+        FacilityReview review = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Review not found"));
+        review.update(dto.getRating(), dto.getContent(), dto.getImageUrl());
+        repository.save(review);
+    }
+
+    @Override
+    public void delete(Long id) {
+        repository.deleteById(id);
     }
 }

@@ -20,5 +20,6 @@ public class FacilityReviewResponseDto {
 
     private Boolean isReported;
 
+    private LocalDateTime writtenAt;
     private LocalDateTime createdAt;
 }

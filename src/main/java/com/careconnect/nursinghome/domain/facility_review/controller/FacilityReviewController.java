@@ -28,4 +28,14 @@ public class FacilityReviewController {
     public List<FacilityReviewResponseDto> getByFacility(@PathVariable Long facilityId) {
         return service.getByFacility(facilityId);
     }
+
+    @PatchMapping("/{id}")
+    public void update(@PathVariable Long id, @RequestBody FacilityReviewRequestDto dto) {
+        service.update(id, dto);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        service.delete(id);
+    }
 }

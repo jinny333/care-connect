@@ -52,11 +52,20 @@ public class Facility {
         this.introduction = introduction;
     }
 
-    public void update(String name, String address, Double latitude, Double longitude, String operatingHours) {
+    public void update(String name, String address, Double latitude, Double longitude,
+                       String phoneNumber, String grade, String priceRange,
+                       Boolean dementiaCare, Boolean rehabilitation,
+                       String operatingHours, String introduction) {
         this.name = name;
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.phoneNumber = phoneNumber;
+        this.grade = grade;
+        this.priceRange = priceRange;
+        this.dementiaCare = dementiaCare;
+        this.rehabilitation = rehabilitation;
         this.operatingHours = operatingHours;
+        this.introduction = introduction;
     }
 }

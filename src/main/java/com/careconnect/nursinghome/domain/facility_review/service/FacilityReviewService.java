@@ -10,4 +10,8 @@ public interface FacilityReviewService {
     FacilityReviewResponseDto get(Long id);
 
     List<FacilityReviewResponseDto> getByFacility(Long facilityId);
+
+    void update(Long id, FacilityReviewRequestDto dto);
+
+    void delete(Long id);
 }

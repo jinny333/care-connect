@@ -1,6 +1,6 @@
 package com.careconnect.nursinghome.domain.notification.controller;
-
-import com.careconnect.nursinghome.domain.notification.entity.Notification;
+import com.careconnect.nursinghome.domain.notification.dto.NotificationRequestDto;
+import com.careconnect.nursinghome.domain.notification.dto.NotificationResponseDto;
 import com.careconnect.nursinghome.domain.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -14,27 +14,28 @@ public class NotificationController {
 
     private final NotificationService service;
 
-    // 생성
     @PostMapping
-    public Notification create(@RequestBody Notification notification) {
-        return service.create(notification);
+    public NotificationResponseDto create(@RequestBody NotificationRequestDto dto) {
+        return service.create(dto);
     }
 
-    // 회원별 조회
     @GetMapping("/member/{memberId}")
-    public List<Notification> getByMember(@PathVariable Long memberId) {
+    public List<NotificationResponseDto> getByMember(@PathVariable Long memberId) {
         return service.getByMember(memberId);
     }
 
-    // 안 읽은 알림
     @GetMapping("/member/{memberId}/unread")
-    public List<Notification> getUnread(@PathVariable Long memberId) {
+    public List<NotificationResponseDto> getUnread(@PathVariable Long memberId) {
         return service.getUnread(memberId);
     }
 
-    // 읽음 처리
     @PatchMapping("/{id}/read")
     public void read(@PathVariable Long id) {
         service.read(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        service.delete(id);
     }
 }
