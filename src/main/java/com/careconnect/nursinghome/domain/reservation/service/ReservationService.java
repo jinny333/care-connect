@@ -17,6 +17,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -85,5 +88,39 @@ public class ReservationService {
 
         // 상태를 CANCELLED로 바꾸고 거절 사유에 "사용자 취소" 적기
         reservation.updateStatus(ReservationStatus.CANCELLED, "사용자 요청으로 인한 취소");
+        ReservationTime slot = reservation.getReservationTime();
+        if (slot.getCurrentCapacity() > 0) {
+            slot.setCurrentCapacity(slot.getCurrentCapacity() - 1);
+        }
+    }
+
+    // 내 예약 목록 조회
+    public List<ReservationResponseDto> getMyReservations(Long memberId) {
+        return reservationRepository.findAllByMemberId(memberId).stream()
+                .map(ReservationResponseDto::from)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void updateReservationStatus(Long id, ReservationStatus status, String rejectReason) {
+        // 1. 예약 데이터 가져오기
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("예약을 찾을 수 없습니다."));
+
+        // 2. 상태랑 사유 업데이트하기 (엔티티의 메서드 호출)
+        reservation.updateStatus(status, rejectReason);
+
+        // 3. 만약 거절(REJECTED)이라면? 인원수 다시 -1 해주기
+        if (status == ReservationStatus.REJECTED) {
+            ReservationTime slot = reservation.getReservationTime();
+            if (slot.getCurrentCapacity() > 0) {
+                slot.setCurrentCapacity(slot.getCurrentCapacity() - 1);
+
+                // 만약 FULL 이었다면 다시 AVAILABLE로 돌려놓기 (선택사항)
+                if (slot.getStatus() == SlotStatus.FULL) {
+                    slot.updateStatus(SlotStatus.AVAILABLE);
+                }
+            }
+        }
     }
 }

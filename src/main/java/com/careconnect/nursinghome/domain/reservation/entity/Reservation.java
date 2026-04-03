@@ -2,10 +2,12 @@ package com.careconnect.nursinghome.domain.reservation.entity;
 
 import com.careconnect.nursinghome.domain.facility.entity.Facility;
 import com.careconnect.nursinghome.domain.member.entity.Member;
+import com.careconnect.nursinghome.domain.reservation.repository.ReservationRepository;
 import com.careconnect.nursinghome.domain.reservation_time.entity.ReservationTime;
 import com.careconnect.nursinghome.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,7 +34,6 @@ public class Reservation extends BaseTimeEntity { // 생성/수정일시 자동�
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "slot_id")
     private ReservationTime reservationTime; // 선택한 슬롯 번호
-
     private LocalDate reservationDate; // 예약 날짜
     private LocalDateTime reservationTimeValue; // 예약 시간 (ERD 기반 중복 저장 시)
 
@@ -46,4 +47,5 @@ public class Reservation extends BaseTimeEntity { // 생성/수정일시 자동�
         this.status = status;
         this.reason = reason;
     }
+
 }

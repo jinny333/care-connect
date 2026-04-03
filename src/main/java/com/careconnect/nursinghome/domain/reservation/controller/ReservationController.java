@@ -2,10 +2,13 @@ package com.careconnect.nursinghome.domain.reservation.controller; // 지나의 
 
 import com.careconnect.nursinghome.domain.reservation.dto.ReservationRequestDto;
 import com.careconnect.nursinghome.domain.reservation.dto.ReservationResponseDto;
+import com.careconnect.nursinghome.domain.reservation.entity.ReservationStatus;
 import com.careconnect.nursinghome.domain.reservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/reservations")
@@ -34,5 +37,22 @@ public class ReservationController {
     public ResponseEntity<Void> cancel(@PathVariable Long id) {
         reservationService.cancelReservation(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // 내 예약 목록 조회 (표에 있는 /me 주소!)
+    @GetMapping("/me")
+    public ResponseEntity<List<ReservationResponseDto>> getMyList() {
+        Long memberId = 1L; // 임시 ID
+        return ResponseEntity.ok(reservationService.getMyReservations(memberId));
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<Void> updateStatus(
+            @PathVariable Long id,
+            @RequestParam ReservationStatus status,
+            @RequestParam(required = false) String rejectReason) {
+
+        reservationService.updateReservationStatus(id, status, rejectReason);
+        return ResponseEntity.ok().build();
     }
 }
