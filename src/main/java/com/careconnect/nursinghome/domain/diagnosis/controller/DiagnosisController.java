@@ -10,27 +10,27 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/diagnosis")
+@RequestMapping("/api/v1/diagnosis")
 public class DiagnosisController {
 
     private final DiagnosisService diagnosisService;
 
-    @PostMapping
+    @PostMapping("/results")
     public ApiResponse<Diagnosis> create(@RequestBody Diagnosis diagnosis) {
         return ApiResponse.ok(diagnosisService.create(diagnosis));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/results/{id}")
     public ApiResponse<Diagnosis> get(@PathVariable Long id) {
         return ApiResponse.ok(diagnosisService.getById(id));
     }
 
-    @GetMapping("/member/{memberId}")
-    public ApiResponse<List<Diagnosis>> getByMember(@PathVariable Long memberId) {
+    @GetMapping("/results/me")
+    public ApiResponse<List<Diagnosis>> getByMember(@RequestParam Long memberId) {
         return ApiResponse.ok(diagnosisService.getByMember(memberId));
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/results/{id}")
     public ApiResponse<Void> update(@PathVariable Long id, @RequestBody Diagnosis diagnosis) {
         diagnosisService.update(id, diagnosis);
         return ApiResponse.ok(null);

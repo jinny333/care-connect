@@ -43,5 +43,4 @@ public class FacilityController {
         facilityService.deleteFacility(id);
         return ApiResponse.ok(null);
     }
-
 }

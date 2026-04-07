@@ -1,6 +1,7 @@
 package com.careconnect.nursinghome.domain.facility_review.controller;
 
-import com.careconnect.nursinghome.domain.facility_review.dto.*;
+import com.careconnect.nursinghome.domain.facility_review.dto.FacilityReviewRequestDto;
+import com.careconnect.nursinghome.domain.facility_review.dto.FacilityReviewResponseDto;
 import com.careconnect.nursinghome.domain.facility_review.service.FacilityReviewService;
 import com.careconnect.nursinghome.global.common.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/reviews")
+@RequestMapping("/api/v1/reviews")
 public class FacilityReviewController {
 
     private final FacilityReviewService service;

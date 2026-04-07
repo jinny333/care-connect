@@ -1,4 +1,5 @@
 package com.careconnect.nursinghome.domain.notification.controller;
+
 import com.careconnect.nursinghome.domain.notification.dto.NotificationRequestDto;
 import com.careconnect.nursinghome.domain.notification.dto.NotificationResponseDto;
 import com.careconnect.nursinghome.domain.notification.service.NotificationService;
@@ -10,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/notifications")
+@RequestMapping("/api/v1/notifications")
 public class NotificationController {
 
     private final NotificationService service;
