@@ -19,6 +19,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final RedisTemplate<String, String> redisTemplate; // Redis 주입!
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        // ⭐ 소셜 로그인 관련 주소와 정적 리소스는 JWT 검사를 하지 않도록 설정!
+        return path.startsWith("/login/oauth2") ||
+                path.startsWith("/oauth2") ||
+                path.startsWith("/favicon.ico") ||
+                path.startsWith("/error");
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
