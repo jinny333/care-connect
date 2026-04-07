@@ -7,10 +7,17 @@ import com.careconnect.nursinghome.domain.member.dto.MemberUpdateDto;
 import com.careconnect.nursinghome.domain.member.entity.Member;
 import com.careconnect.nursinghome.domain.member.entity.Role;
 import com.careconnect.nursinghome.domain.member.repository.MemberRepository;
+import com.careconnect.nursinghome.global.auth.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -19,6 +26,9 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+
+    private final JwtTokenProvider jwtTokenProvider;
+    private final RedisTemplate<String, String> redisTemplate;
 
     public MemberJoinResponse join(MemberJoinRequest dto) {
         // 1. 중복 이메일 검증
@@ -90,5 +100,49 @@ public class MemberService {
                 .build();
 
         return memberRepository.save(member).getId();
+    }
+
+    @Transactional
+    public void withdrawMember(String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("해당 회원을 찾을 수 없습니다."));
+
+        // 1. 상태를 탈퇴로 변경
+        member.setStatus(Member.MemberStatus.WITHDRAWN);
+
+        // 2. 탈퇴 시점을 현재 시간으로 기록
+        member.setWithdrawnAt(LocalDateTime.now());
+   }
+
+    // MemberService.java
+
+    public void logout(String accessToken) {
+        // 1. 토큰 유효성 검사 (실무 필수!)
+        if (!jwtTokenProvider.validateToken(accessToken)) {
+            throw new RuntimeException("유효하지 않은 토큰입니다.");
+        }
+
+        // 2. 토큰의 남은 유효 시간 계산
+        long expiration = jwtTokenProvider.getExpiration(accessToken);
+
+        // 3. [실무 로직] Redis 블랙리스트 등록 (임시 주석 처리)
+    /* redisTemplate.opsForValue().set(
+            accessToken,
+            "logout",
+            expiration,
+            TimeUnit.MILLISECONDS
+    );
+    */
+
+        // 4. 테스트를 위해 로그는 남겨두기
+        System.out.println("로그아웃 요청 - 블랙리스트 예약 토큰: " + accessToken);
+        System.out.println("남은 유효 시간(ms): " + expiration);
+    }
+
+    @Transactional(readOnly = true)
+    public List<MemberResponseDto> findAllMembers() {
+        return memberRepository.findAll().stream()
+                .map(MemberResponseDto::from) // ⭐ 이 한 줄로 끝내세요! (제일 깔끔)
+                .collect(Collectors.toList());
     }
 }

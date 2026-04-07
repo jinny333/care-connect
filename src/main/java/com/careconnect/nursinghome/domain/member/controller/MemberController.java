@@ -8,6 +8,7 @@ import com.careconnect.nursinghome.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -62,5 +63,27 @@ public class MemberController {
         Long tempId = 3L; // 👈 아까 가입 성공한 ID로 임시 고정!
         Long updatedId = memberService.updateMyInfo(tempId, updateDto);
         return ResponseEntity.ok(updatedId);
+    }
+
+    @DeleteMapping("/me")
+    public ResponseEntity<String> withdraw() { // 👈 (@AuthenticationPrincipal User user) 이걸 일단 지우세요!
+
+        // 1. 실제 DB에 있는 테스트하고 싶은 이메일을 직접 넣습니다.
+        // 아까 회원가입할 때 썼던 그 이메일을 적어주세요!
+        String testEmail = "jinny3@test.com";
+
+        memberService.withdrawMember(testEmail);
+        return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestHeader("Authorization") String bearerToken) {
+        // "Bearer " 부분을 떼고 순수 토큰만 추출
+        String accessToken = bearerToken.substring(7);
+
+        // 서비스에 로그아웃 처리를 맡깁니다.
+        memberService.logout(accessToken);
+
+        return ResponseEntity.ok("로그아웃 되었습니다.");
     }
 }
