@@ -48,9 +48,10 @@ public class MemberController {
 
     // 1. 내 정보 조회 (기존 GetMapping 수정)
     @GetMapping("/me")
-    public ResponseEntity<MemberResponseDto> findMemberInfoById() {
-        Long tempId = 3L; // 👈 여기도 3번으로 고정!
-        return ResponseEntity.ok(memberService.getMyInfo(tempId));
+    public ResponseEntity<MemberResponseDto> findMemberInfoById(@AuthenticationPrincipal User user) {
+        // 이제 user.getUsername()을 하면 토큰에 담긴 memberId가 쏙 나옵니다!
+        Long memberId = Long.parseLong(user.getUsername());
+        return ResponseEntity.ok(memberService.getMyInfo(memberId));
     }
 
     // 2. 내 정보 수정 (기존 PatchMapping 두 개를 이거 하나로 합치세요!)

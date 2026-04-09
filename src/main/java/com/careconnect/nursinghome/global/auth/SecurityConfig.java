@@ -18,6 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2SuccessHandler successHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -32,13 +33,14 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserService) // 우리가 만든 서비스 연결
-                        )
-                        .defaultSuccessUrl("/api/v1/members/me", true)
+                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                        .successHandler(successHandler) // ⭐ 핸들러가 토큰을 만들고 /me로 보내줄 거예요!
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll() // ⭐ 모든 요청을 다 열어버림! (테스트용)
+                        // 1. 로그인 관련 경로는 다 열어줘야 해요.
+                        .requestMatchers("/login/**", "/oauth2/**").permitAll()
+                        // 2. 나머지는 테스트를 위해 일단 다 열어둡니다.
+                        .anyRequest().permitAll()
                 );
         // 필터 주석 처리됨
 

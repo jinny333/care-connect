@@ -3,6 +3,7 @@ package com.careconnect.nursinghome.domain.member.service;
 import com.careconnect.nursinghome.domain.member.entity.Member;
 import com.careconnect.nursinghome.domain.member.entity.Role;
 import com.careconnect.nursinghome.domain.member.repository.MemberRepository;
+import com.careconnect.nursinghome.global.auth.CustomOAuth2User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -53,10 +54,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 });
 
         // 5. Spring Security 세션에 저장할 객체 반환
-        return new DefaultOAuth2User(
-                Collections.singleton(new SimpleGrantedAuthority(member.getRole().name())),
+        return new CustomOAuth2User(
+                Collections.singleton(new SimpleGrantedAuthority("ROLE_" + member.getRole().name())),
                 attributes,
-                "id" // 네이버 응답에서 식별자로 쓸 키 값
+                "id",      // 네이버 응답 식별자
+                member.getId(),   // ⭐ DB에서 생성된 진짜 ID 전달!
+                member.getRole().name()
         );
     }
 }
