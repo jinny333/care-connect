@@ -16,29 +16,38 @@ public class Facility {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name; // 기관명
+    private String name;
     private String address;
-
     private Double latitude;
     private Double longitude;
-
     private String phoneNumber;
-
     private String grade;
     private String priceRange;
-
     private Boolean dementiaCare;
     private Boolean rehabilitation;
+    private String operatingHours;
+    private String introduction;
 
-    private String operatingHours; // 간단히 통합
-
-    private String introduction; // 소개
+    // 추가된 필드
+    private String staff;
+    private Integer capacity;
+    private String programs;
+    private String openDate;
+    private Integer floors;
+    private Integer currentMale;
+    private Integer currentFemale;
+    private Integer waitingMale;
+    private Integer waitingFemale;
+    private String directions;
 
     public Facility(String name, String address, Double latitude, Double longitude,
                     String phoneNumber, String grade, String priceRange,
                     Boolean dementiaCare, Boolean rehabilitation,
-                    String operatingHours, String introduction) {
-
+                    String operatingHours, String introduction,
+                    String staff, Integer capacity, String programs,
+                    String openDate, Integer floors, Integer currentMale,
+                    Integer currentFemale, Integer waitingMale,
+                    Integer waitingFemale, String directions) {
         this.name = name;
         this.address = address;
         this.latitude = latitude;
@@ -50,12 +59,26 @@ public class Facility {
         this.rehabilitation = rehabilitation;
         this.operatingHours = operatingHours;
         this.introduction = introduction;
+        this.staff = staff;
+        this.capacity = capacity;
+        this.programs = programs;
+        this.openDate = openDate;
+        this.floors = floors;
+        this.currentMale = currentMale;
+        this.currentFemale = currentFemale;
+        this.waitingMale = waitingMale;
+        this.waitingFemale = waitingFemale;
+        this.directions = directions;
     }
 
     public void update(String name, String address, Double latitude, Double longitude,
                        String phoneNumber, String grade, String priceRange,
                        Boolean dementiaCare, Boolean rehabilitation,
-                       String operatingHours, String introduction) {
+                       String operatingHours, String introduction,
+                       String staff, Integer capacity, String programs,
+                       String openDate, Integer floors, Integer currentMale,
+                       Integer currentFemale, Integer waitingMale,
+                       Integer waitingFemale, String directions) {
         this.name = name;
         this.address = address;
         this.latitude = latitude;
@@ -67,5 +90,15 @@ public class Facility {
         this.rehabilitation = rehabilitation;
         this.operatingHours = operatingHours;
         this.introduction = introduction;
+        this.staff = staff;
+        this.capacity = capacity;
+        this.programs = programs;
+        this.openDate = openDate;
+        this.floors = floors;
+        this.currentMale = currentMale;
+        this.currentFemale = currentFemale;
+        this.waitingMale = waitingMale;
+        this.waitingFemale = waitingFemale;
+        this.directions = directions;
     }
 }

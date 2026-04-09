@@ -17,7 +17,6 @@ public class FacilityService {
 
     private final FacilityRepository facilityRepository;
 
-    // ✅ 1. 시설 등록
     public Long createFacility(FacilityRequest request) {
         Facility facility = new Facility(
                 request.getName(),
@@ -30,13 +29,21 @@ public class FacilityService {
                 request.getDementiaCare(),
                 request.getRehabilitation(),
                 request.getOperatingHours(),
-                request.getIntroduction()
+                request.getIntroduction(),
+                request.getStaff(),
+                request.getCapacity(),
+                request.getPrograms(),
+                request.getOpenDate(),
+                request.getFloors(),
+                request.getCurrentMale(),
+                request.getCurrentFemale(),
+                request.getWaitingMale(),
+                request.getWaitingFemale(),
+                request.getDirections()
         );
-
         return facilityRepository.save(facility).getId();
     }
 
-    // ✅ 2. 시설 전체 조회
     public List<FacilityResponse> getFacilities() {
         return facilityRepository.findAll()
                 .stream()
@@ -44,15 +51,11 @@ public class FacilityService {
                 .collect(Collectors.toList());
     }
 
-    // ✅ 3. 시설 단건 조회
     public FacilityResponse getFacility(Long id) {
         Facility facility = facilityRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("시설 없음 id=" + id));
-
         return new FacilityResponse(facility);
     }
-
-    // ✅ 4. 시설 수정
 
     @Transactional
     public void updateFacility(Long id, FacilityRequest request) {
@@ -70,13 +73,21 @@ public class FacilityService {
                 request.getDementiaCare(),
                 request.getRehabilitation(),
                 request.getOperatingHours(),
-                request.getIntroduction()
+                request.getIntroduction(),
+                request.getStaff(),
+                request.getCapacity(),
+                request.getPrograms(),
+                request.getOpenDate(),
+                request.getFloors(),
+                request.getCurrentMale(),
+                request.getCurrentFemale(),
+                request.getWaitingMale(),
+                request.getWaitingFemale(),
+                request.getDirections()
         );
-
-        facilityRepository.save(facility); // 명시적 save
+        facilityRepository.save(facility);
     }
 
-    // ✅ 5. 시설 삭제
     public void deleteFacility(Long id) {
         facilityRepository.deleteById(id);
     }

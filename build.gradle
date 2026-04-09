@@ -56,6 +56,9 @@ dependencies {
 
 	// 이게 꼭 있어야 OAuth2 관련 클래스들을 사용할 수 있어요!
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
 }
 
 tasks.named('test') {
