@@ -57,6 +57,7 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of(
                 "http://localhost:5175",
                 "http://172.16.120.157:5175",
+                "http://172.16.81.182:5175",
                 "http://172.19.24.170:5175"
         ));
 
