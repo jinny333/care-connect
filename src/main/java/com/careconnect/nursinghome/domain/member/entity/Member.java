@@ -85,4 +85,11 @@ public class Member {
         this.provider = provider;
         this.providerId = providerId;
     }
+
+    // 이 코드를 Member 클래스 내부에 넣어주세요!
+    public void withdraw() {
+        this.isDeleted = true; // 삭제 상태를 '참'으로 변경
+        // 만약 withdrawnAt 필드가 있다면 아래 줄도 주석 해제하세요!
+        // this.withdrawnAt = java.time.LocalDateTime.now();
+    }
 }

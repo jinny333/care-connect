@@ -145,4 +145,12 @@ public class MemberService {
                 .map(MemberResponseDto::from) // ⭐ 이 한 줄로 끝내세요! (제일 깔끔)
                 .collect(Collectors.toList());
     }
+
+    @Transactional
+    public void withdrawMemberById(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("해당 회원을 찾을 수 없습니다."));
+        member.withdraw(); // 엔티티에 탈퇴 로직(isDeleted = true 등)이 있다면 실행
+        memberRepository.save(member);
+    }
 }
