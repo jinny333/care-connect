@@ -14,7 +14,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private final JwtTokenProvider tokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -26,7 +26,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String role = oAuth2User.getRole();
 
         // 1. JWT 토큰 생성
-        String token = tokenProvider.createToken(memberId, role);
+        String token = jwtTokenProvider.createToken(memberId, role);
 
         // 2. 토큰을 담아서 내 정보 페이지로 리다이렉트 (나희님 테스트용)
         String targetUrl = UriComponentsBuilder.fromUriString("/api/v1/members/me")

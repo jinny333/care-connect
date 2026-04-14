@@ -5,14 +5,15 @@ import com.careconnect.nursinghome.domain.member.dto.MemberJoinResponse;
 import com.careconnect.nursinghome.domain.member.dto.MemberResponseDto;
 import com.careconnect.nursinghome.domain.member.dto.MemberUpdateDto;
 import com.careconnect.nursinghome.domain.member.service.MemberService;
+import com.careconnect.nursinghome.global.auth.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
-@RequestMapping("/api/v1/members") // 명세서의 기본 Endpoint 주소
+@RequestMapping("/api/v1/members")
 @RequiredArgsConstructor
 public class MemberController {
 
@@ -20,71 +21,76 @@ public class MemberController {
 
     /**
      * 회원가입 API
-     * 명세서 주소: POST /api/v1/members/signup
      */
     @PostMapping("/signup")
     public ResponseEntity<MemberJoinResponse> signup(@RequestBody MemberJoinRequest request) {
-        // 서비스 호출해서 회원가입 진행
+        // getLoginId() 대신 getEmail()을 사용!
+        log.info("📝 [연동 테스트] 회원가입 요청 발생! - 이메일: {}, 이름: {}", request.getEmail(), request.getName());
+
         MemberJoinResponse response = memberService.join(request);
 
-        // 성공 시 200 OK와 함께 생성된 회원 정보 응답
+        log.info("✅ [연동 성공] 회원가입 완료! - 등록된 ID: {}", response.getId());
         return ResponseEntity.ok(response);
     }
 
-//    @GetMapping("/me")
-//    public ResponseEntity<MemberResponseDto> findMemberInfoById() {
-//        // 아직 로그인이 없으므로, 테스트를 위해 DB에 저장된 1번 사용자를 조회한다고 가정합니다.
-//        // 나중에 Security(토큰)를 적용하면 이 부분이 "현재 로그인 유저 ID"로 바뀔 거예요!
-//        Long tempId = 1L;
-//        return ResponseEntity.ok(memberService.getMyInfo(tempId));
-//    }
-//
-//    @PatchMapping("/me")
-//    public ResponseEntity<Long> updateMemberInfo(@RequestBody MemberUpdateDto updateDto) {
-//        // 임시 ID 사용 (나중에 토큰으로 교체!)
-//        Long tempId = 1L;
-//        return ResponseEntity.ok(memberService.updateMyInfo(tempId, updateDto));
-//    }
-
-    // 1. 내 정보 조회 (기존 GetMapping 수정)
+    /**
+     * 1. 내 정보 조회 (JWT 토큰 기반)
+     */
     @GetMapping("/me")
-    public ResponseEntity<MemberResponseDto> findMemberInfoById(@AuthenticationPrincipal User user) {
-        // 이제 user.getUsername()을 하면 토큰에 담긴 memberId가 쏙 나옵니다!
-        Long memberId = Long.parseLong(user.getUsername());
-        return ResponseEntity.ok(memberService.getMyInfo(memberId));
+    public ResponseEntity<MemberResponseDto> findMemberInfoById() {
+        Long memberId = SecurityUtil.getCurrentMemberId();
+        log.info("[연동 테스트] 내 정보 조회 요청 - 토큰 추출 ID: {}", memberId);
+
+        MemberResponseDto response = memberService.getMyInfo(memberId);
+
+        log.info("[조회 완료] {}님 정보 반환 성공", response.getName());
+        return ResponseEntity.ok(response);
     }
 
-    // 2. 내 정보 수정 (기존 PatchMapping 두 개를 이거 하나로 합치세요!)
+    /**
+     * 2. 내 정보 수정 (JWT 토큰 기반)
+     */
     @PatchMapping("/me")
-    public ResponseEntity<Long> updateMyInfo(
-            // @AuthenticationPrincipal 대신 테스트를 위해 ID를 직접 지정해봅시다!
-            // 아까 가입했을 때 성공한 ID가 3번이었죠? 그걸로 테스트해볼게요.
-            @RequestBody MemberUpdateDto updateDto) {
+    public ResponseEntity<Long> updateMyInfo(@RequestBody MemberUpdateDto updateDto) {
+        Long memberId = SecurityUtil.getCurrentMemberId();
+        log.info("[연동 테스트] 정보 수정 시도 - 대상 ID: {}", memberId);
 
-        Long tempId = 3L; // 👈 아까 가입 성공한 ID로 임시 고정!
-        Long updatedId = memberService.updateMyInfo(tempId, updateDto);
+        Long updatedId = memberService.updateMyInfo(memberId, updateDto);
+
+        log.info("[수정 완료] 회원 ID {}번 정보 업데이트 성공", updatedId);
         return ResponseEntity.ok(updatedId);
     }
 
+    /**
+     * 3. 회원 탈퇴 (JWT 토큰 기반)
+     */
     @DeleteMapping("/me")
-    public ResponseEntity<String> withdraw() { // 👈 (@AuthenticationPrincipal User user) 이걸 일단 지우세요!
+    public ResponseEntity<String> withdraw() {
+        Long memberId = SecurityUtil.getCurrentMemberId();
+        log.warn("[연동 테스트] 회원 탈퇴 요청! - 탈퇴 대상 ID: {}", memberId);
 
-        // 1. 실제 DB에 있는 테스트하고 싶은 이메일을 직접 넣습니다.
-        // 아까 회원가입할 때 썼던 그 이메일을 적어주세요!
-        String testEmail = "jinny3@test.com";
+        memberService.withdrawMemberById(memberId);
 
-        memberService.withdrawMember(testEmail);
+        log.info("[탈퇴 완료] ID {}번 유저가 시스템을 떠났습니다.", memberId);
         return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");
     }
 
+    /**
+     * 4. 로그아웃
+     */
     @PostMapping("/logout")
     public ResponseEntity<String> logout(@RequestHeader("Authorization") String bearerToken) {
-        // "Bearer " 부분을 떼고 순수 토큰만 추출
-        String accessToken = bearerToken.substring(7);
+        log.info("[연동 테스트] 로그아웃 요청 들어옴");
 
-        // 서비스에 로그아웃 처리를 맡깁니다.
-        memberService.logout(accessToken);
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            String accessToken = bearerToken.substring(7);
+            memberService.logout(accessToken);
 
-        return ResponseEntity.ok("로그아웃 되었습니다.");
+            log.info("[로그아웃 완료] 토큰 무효화 처리 성공");
+            return ResponseEntity.ok("로그아웃 되었습니다.");
+        }
+
+        log.error("[로그아웃 실패] 토큰 형식이 잘못되었습니다: {}", bearerToken);
+        return ResponseEntity.badRequest().body("잘못된 토큰 형식입니다.");
     }
 }

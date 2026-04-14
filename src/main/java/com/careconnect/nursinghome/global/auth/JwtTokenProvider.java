@@ -3,12 +3,14 @@ package com.careconnect.nursinghome.global.auth;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
 
+@Slf4j
 @Component
 public class JwtTokenProvider {
 
@@ -42,12 +44,22 @@ public class JwtTokenProvider {
 
     // 토큰에서 회원 ID 추출
     public Long getMemberId(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return Long.parseLong(claims.getSubject());
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            return Long.parseLong(claims.getSubject());
+        } catch (ExpiredJwtException e) {
+            // 토큰 만료 시 처리 (나희님 노트북 에러 원인일 수 있음)
+            log.info("만료된 JWT 토큰입니다.");
+            return null;
+        } catch (Exception e) {
+            log.info("잘못된 JWT 토큰입니다.");
+            return null;
+        }
     }
 
     // 토큰 유효성 검사
