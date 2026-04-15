@@ -6,8 +6,11 @@ import com.careconnect.nursinghome.domain.reservation.entity.ReservationStatus;
 import com.careconnect.nursinghome.domain.reservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -19,9 +22,13 @@ public class ReservationController {
 
     // 1. 예약 생성 (POST)
     @PostMapping
-    public ResponseEntity<Long> create(@RequestBody ReservationRequestDto requestDto) {
-        // 실제로는 JWT에서 memberId를 꺼내야 하지만, 일단 테스트용으로 1번 사용자라고 가정!
-        Long memberId = 1L;
+    public ResponseEntity<Long> create(
+            Principal principal, // 인증 객체 추가
+            @RequestBody ReservationRequestDto requestDto) {
+
+        // principal.getName()을 통해 토큰에 담긴 사용자 ID(숫자)를 꺼냅니다.
+        Long memberId = Long.parseLong(principal.getName());
+
         Long reservationId = reservationService.createReservation(memberId, requestDto);
         return ResponseEntity.ok(reservationId);
     }
@@ -41,8 +48,12 @@ public class ReservationController {
 
     // 내 예약 목록 조회 (표에 있는 /me 주소!)
     @GetMapping("/me")
-    public ResponseEntity<List<ReservationResponseDto>> getMyList() {
-        Long memberId = 1L; // 임시 ID
+    public ResponseEntity<List<ReservationResponseDto>> getMyList(
+            Principal principal) { // 인증 객체 추가
+
+        // 여기서도 1L 대신 로그인한 유저의 ID를 사용합니다!
+        Long memberId = Long.parseLong(principal.getName());
+
         return ResponseEntity.ok(reservationService.getMyReservations(memberId));
     }
 
