@@ -12,7 +12,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter; // 추가됨
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -26,7 +26,7 @@ public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2SuccessHandler successHandler;
-    private final JwtTokenProvider jwtTokenProvider; // 1. 상단에 final로 선언해야 생성자 주입이 돼!
+    private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate<String, String> redisTemplate;
 
     @Bean
@@ -47,16 +47,10 @@ public class SecurityConfig {
                         .successHandler(successHandler)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // 1. 로그인, 회원가입, OAuth2 관련 주소는 모두 허용
                         .requestMatchers("/", "/login/**", "/oauth2/**", "/api/v1/members/signup", "/api/v1/auth/login").permitAll()
-
-                        // 2. [중요!] 예약 관련 API는 반드시 인증(로그인)이 필요하다고 설정!
                         .requestMatchers("/api/v1/reservations/**").authenticated()
-
-                        // 3. 나머지도 웬만하면 로그인이 필요하게 설정하는 게 안전해요
                         .anyRequest().authenticated()
                 )
-                // JWT 필터 위치 확인
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -66,13 +60,15 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // [수정] 패턴 대신 나희님의 현재 주소를 명확하게 적어주세요!
-        config.setAllowedOrigins(List.of("http://localhost:5175", "http://172.29.113.109:5175"));
+        config.setAllowedOriginPatterns(List.of(
+                "http://localhost:*",
+                "http://172.29.*.*:*"
+        ));
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
-        config.setExposedHeaders(List.of("Authorization")); // 나희님이 토큰을 읽을 수 있게 노출!
+        config.setExposedHeaders(List.of("Authorization"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

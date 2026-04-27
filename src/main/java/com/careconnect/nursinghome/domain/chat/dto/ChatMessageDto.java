@@ -9,5 +9,5 @@ public class ChatMessageDto {
     private Long roomId;
     private Long memberId;
     private String content;
-    private String type; // ENTER, TALK, LEAVE
+    private String type;
 }

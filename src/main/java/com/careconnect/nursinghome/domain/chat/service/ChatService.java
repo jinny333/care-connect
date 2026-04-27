@@ -9,6 +9,7 @@ import com.careconnect.nursinghome.domain.chat.repository.ChatMessageRepository;
 import com.careconnect.nursinghome.domain.chat.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.stream.Collectors;
 

@@ -6,6 +6,7 @@ import com.careconnect.nursinghome.global.common.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -18,19 +19,22 @@ public class FacilityLikeController {
     @PostMapping("/{facilityId}")
     public ApiResponse<Boolean> toggleLike(
             @PathVariable Long facilityId,
-            @RequestParam Long memberId) {
+            Principal principal) {
+        Long memberId = Long.parseLong(principal.getName());
         return ApiResponse.ok(facilityLikeService.toggleLike(memberId, facilityId));
     }
 
     @GetMapping
-    public ApiResponse<List<FacilityResponse>> getLikedFacilities(@RequestParam Long memberId) {
+    public ApiResponse<List<FacilityResponse>> getLikedFacilities(Principal principal) {
+        Long memberId = Long.parseLong(principal.getName());
         return ApiResponse.ok(facilityLikeService.getLikedFacilities(memberId));
     }
 
     @GetMapping("/{facilityId}")
     public ApiResponse<Boolean> isLiked(
             @PathVariable Long facilityId,
-            @RequestParam Long memberId) {
+            Principal principal) {
+        Long memberId = Long.parseLong(principal.getName());
         return ApiResponse.ok(facilityLikeService.isLiked(memberId, facilityId));
     }
 }
