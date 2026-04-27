@@ -43,4 +43,19 @@ public class FacilityController {
         facilityService.deleteFacility(id);
         return ApiResponse.ok(null);
     }
+
+    // 키워드 검색
+    @GetMapping("/search/keyword")
+    public ApiResponse<List<FacilityResponse>> searchFacilities(@RequestParam String keyword) {
+        return ApiResponse.ok(facilityService.searchFacilities(keyword));
+    }
+
+    // 위치 기반 검색
+    @GetMapping("/search")
+    public ApiResponse<List<FacilityResponse>> getFacilitiesByLocation(
+            @RequestParam Double lat,
+            @RequestParam Double lon,
+            @RequestParam(defaultValue = "5") Double radius) {
+        return ApiResponse.ok(facilityService.getFacilitiesByLocation(lat, lon, radius));
+    }
 }

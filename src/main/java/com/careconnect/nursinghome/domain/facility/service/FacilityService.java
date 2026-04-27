@@ -91,4 +91,20 @@ public class FacilityService {
     public void deleteFacility(Long id) {
         facilityRepository.deleteById(id);
     }
+
+    // 키워드 검색
+    public List<FacilityResponse> searchFacilities(String keyword) {
+        return facilityRepository.findByKeyword(keyword)
+                .stream()
+                .map(FacilityResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    // 위치 기반 검색
+    public List<FacilityResponse> getFacilitiesByLocation(Double lat, Double lon, Double radius) {
+        return facilityRepository.findByLocation(lat, lon, radius)
+                .stream()
+                .map(FacilityResponse::new)
+                .collect(Collectors.toList());
+    }
 }
