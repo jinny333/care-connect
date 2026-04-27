@@ -37,7 +37,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 이거 추가
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -47,9 +47,16 @@ public class SecurityConfig {
                         .successHandler(successHandler)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login/**", "/oauth2/**").permitAll()
-                        .anyRequest().permitAll()
+                        // 1. 로그인, 회원가입, OAuth2 관련 주소는 모두 허용
+                        .requestMatchers("/", "/login/**", "/oauth2/**", "/api/v1/members/signup", "/api/v1/auth/login").permitAll()
+
+                        // 2. [중요!] 예약 관련 API는 반드시 인증(로그인)이 필요하다고 설정!
+                        .requestMatchers("/api/v1/reservations/**").authenticated()
+
+                        // 3. 나머지도 웬만하면 로그인이 필요하게 설정하는 게 안전해요
+                        .anyRequest().authenticated()
                 )
+                // JWT 필터 위치 확인
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
