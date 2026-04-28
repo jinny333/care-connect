@@ -29,7 +29,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String token = jwtTokenProvider.createToken(memberId, role);
 
         // 2. 토큰을 담아서 내 정보 페이지로 리다이렉트 (나희님 테스트용)
-        String targetUrl = UriComponentsBuilder.fromUriString("/api/v1/members/me")
+        String targetUrl = UriComponentsBuilder.fromUriString("http://172.29.99.175:5175/login-success")
                 .queryParam("token", token)
                 .build().toUriString();
 

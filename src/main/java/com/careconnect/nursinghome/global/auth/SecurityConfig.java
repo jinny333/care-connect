@@ -47,7 +47,7 @@ public class SecurityConfig {
                         .successHandler(successHandler)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login/**", "/oauth2/**", "/api/v1/members/signup", "/api/v1/auth/login").permitAll()
+                        .requestMatchers("/", "/login/**", "/oauth2/**", "/api/facility/**", "/api/v1/members/signup", "/api/v1/auth/login").permitAll()
                         .requestMatchers("/api/v1/reservations/**").authenticated()
                         .anyRequest().authenticated()
                 )
