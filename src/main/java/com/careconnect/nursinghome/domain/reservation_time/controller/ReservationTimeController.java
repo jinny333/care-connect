@@ -54,8 +54,15 @@ public class ReservationTimeController {
     }
 
     @GetMapping("/facilities/{facilityId}/times")
-    public ResponseEntity<List<ReservationTimeResponseDto>> getTimes(@PathVariable Long facilityId) {
-        return ResponseEntity.ok(reservationTimeService.getTimesByFacility(facilityId));
+    public ResponseEntity<List<ReservationTimeResponseDto>> getTimes(
+            @PathVariable Long facilityId,
+            @RequestParam(value = "date") String date) { // 👈 서진이는 String으로 보냅니다.
+
+        // 1. 글자를 날짜 객체(LocalDate)로 변환!
+        java.time.LocalDate localDate = java.time.LocalDate.parse(date);
+
+        // 2. 변환된 날짜를 서비스에 전달
+        return ResponseEntity.ok(reservationTimeService.getTimesByFacilityAndDate(facilityId, localDate));
     }
 
     @PatchMapping("/facilities/times/{timeId}")

@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,10 +20,13 @@ public class ReservationTimeService {
     private final ReservationTimeRepository reservationTimeRepository;
 
     // 특정 시설의 예약 가능 시간 목록 조회
-    public List<ReservationTimeResponseDto> getTimesByFacility(Long facilityId) {
-        return reservationTimeRepository.findAllByFacilityId(facilityId).stream()
+    public List<ReservationTimeResponseDto> getTimesByFacilityAndDate(Long facilityId, LocalDate date) {
+        // 리포지토리에 이미 있는 메서드 호출!
+        List<ReservationTime> times = reservationTimeRepository.findByFacilityIdAndDate(facilityId, date);
+
+        return times.stream()
                 .map(ReservationTimeResponseDto::from)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional

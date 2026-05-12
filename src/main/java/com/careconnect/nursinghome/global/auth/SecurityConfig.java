@@ -51,6 +51,14 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/reservations/**").authenticated()
                         .anyRequest().authenticated()
                 )
+                // ⬇️ 서진이가 요청한 401 에러 반환 설정 추가
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(401); // HttpServletResponse.SC_UNAUTHORIZED 대신 숫자로 써도 됩니다.
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.getWriter().write("{\"message\": \"인증에 실패했습니다. 다시 로그인해주세요.\"}");
+                        })
+                )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -62,7 +70,8 @@ public class SecurityConfig {
 
         config.setAllowedOriginPatterns(List.of(
                 "http://localhost:*",
-                "http://172.29.*.*:*"
+                "https://*.ngrok-free.app",  // 서진이의 ngrok 주소를 포함한 모든 ngrok 허용
+                "https://*.ngrok-free.dev"   // 혹시 모를 dev 도메인도 추가
         ));
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
