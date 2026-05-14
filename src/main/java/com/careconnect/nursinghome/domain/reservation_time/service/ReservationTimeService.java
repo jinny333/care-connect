@@ -21,12 +21,13 @@ public class ReservationTimeService {
 
     // 특정 시설의 예약 가능 시간 목록 조회
     public List<ReservationTimeResponseDto> getTimesByFacilityAndDate(Long facilityId, LocalDate date) {
-        // 리포지토리에 이미 있는 메서드 호출!
         List<ReservationTime> times = reservationTimeRepository.findByFacilityIdAndDate(facilityId, date);
 
         return times.stream()
+                // 예약 가능한(AVAILABLE) 상태인 것만 프런트엔드에 전달
+                .filter(t -> t.getStatus() == SlotStatus.AVAILABLE)
                 .map(ReservationTimeResponseDto::from)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Transactional

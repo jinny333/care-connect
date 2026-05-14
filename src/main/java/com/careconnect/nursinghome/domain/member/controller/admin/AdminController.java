@@ -1,4 +1,4 @@
-package com.careconnect.nursinghome.domain.member.controller;
+package com.careconnect.nursinghome.domain.member.controller.admin;
 
 import com.careconnect.nursinghome.domain.member.dto.MemberResponseDto;
 import com.careconnect.nursinghome.domain.member.service.MemberService;

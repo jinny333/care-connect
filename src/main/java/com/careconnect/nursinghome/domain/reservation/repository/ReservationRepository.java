@@ -11,4 +11,5 @@ import java.util.List;
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     List<Reservation> findAllByMemberId(Long memberId);
     // 기본 CRUD(저장, 조회, 삭제)는 JpaRepository가 해줌
+    List<Reservation> findByFacilityId(Long facilityId);
 }

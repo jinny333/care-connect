@@ -123,4 +123,13 @@ public class ReservationService {
             }
         }
     }
+
+    // 특정 시설의 모든 예약 내역 조회 (관리자 웹용)
+    public List<ReservationResponseDto> getReservationsByFacility(Long facilityId) {
+        // 1. 리포지토리에서 해당 시설 ID로 예약 리스트를 다 가져옵니다.
+        // (리포지토리에 findByFacilityId 메서드가 미리 선언되어 있어야 합니다!)
+        return reservationRepository.findByFacilityId(facilityId).stream()
+                .map(ReservationResponseDto::from)
+                .collect(Collectors.toList());
+    }
 }
