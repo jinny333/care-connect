@@ -43,4 +43,8 @@ public class FacilityReview {
         this.imageUrl = imageUrl;
         this.writtenAt = LocalDateTime.now();
     }
+
+    public void updateAdminReply(String adminReply) {
+        this.adminReply = adminReply;
+    }
 }

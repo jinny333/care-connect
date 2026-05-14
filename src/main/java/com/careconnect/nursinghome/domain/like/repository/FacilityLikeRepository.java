@@ -10,4 +10,7 @@ public interface FacilityLikeRepository extends JpaRepository<FacilityLike, Long
     Optional<FacilityLike> findByMemberIdAndFacilityId(Long memberId, Long facilityId);
     List<FacilityLike> findByMemberId(Long memberId);
     boolean existsByMemberIdAndFacilityId(Long memberId, Long facilityId);
+
+    // 👈 관리자 웹을 위해 추가: 특정 시설을 찜한 총 인원수
+    long countByFacilityId(Long facilityId);
 }

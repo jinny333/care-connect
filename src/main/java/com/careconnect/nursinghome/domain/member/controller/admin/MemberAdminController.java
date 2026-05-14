@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 @RestController
-@RequestMapping("/api/v1/admin")
+@RequestMapping("/api/v1/admin/members")
 @RequiredArgsConstructor
-public class AdminController {
+public class MemberAdminController {
 
     private final MemberService memberService;
 

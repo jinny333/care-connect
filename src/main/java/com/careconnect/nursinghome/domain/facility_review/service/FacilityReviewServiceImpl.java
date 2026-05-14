@@ -5,6 +5,7 @@ import com.careconnect.nursinghome.domain.facility_review.entity.FacilityReview;
 import com.careconnect.nursinghome.domain.facility_review.repository.FacilityReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -70,5 +71,14 @@ public class FacilityReviewServiceImpl implements FacilityReviewService {
     @Override
     public void delete(Long id) {
         repository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public void updateAdminReply(Long id, String reply) {
+        FacilityReview review = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Review not found"));
+        review.updateAdminReply(reply); // Entity에 updateAdminReply 메서드가 있어야 합니다!
+        repository.save(review);
     }
 }

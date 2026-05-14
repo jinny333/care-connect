@@ -45,4 +45,8 @@ public class FacilityLikeService {
     public boolean isLiked(Long memberId, Long facilityId) {
         return facilityLikeRepository.existsByMemberIdAndFacilityId(memberId, facilityId);
     }
+
+    public long getLikeCount(Long facilityId) {
+        return facilityLikeRepository.countByFacilityId(facilityId);
+    }
 }

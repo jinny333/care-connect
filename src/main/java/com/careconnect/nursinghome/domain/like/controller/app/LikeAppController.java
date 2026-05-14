@@ -1,4 +1,4 @@
-package com.careconnect.nursinghome.domain.like.controller;
+package com.careconnect.nursinghome.domain.like.controller.app;
 
 import com.careconnect.nursinghome.domain.facility.dto.FacilityResponse;
 import com.careconnect.nursinghome.domain.like.service.FacilityLikeService;
@@ -11,8 +11,8 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/likes")
-public class FacilityLikeController {
+@RequestMapping("/api/v1/app/likes")
+public class LikeAppController {
 
     private final FacilityLikeService facilityLikeService;
 

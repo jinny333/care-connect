@@ -1,4 +1,4 @@
-package com.careconnect.nursinghome.domain.chat.controller;
+package com.careconnect.nursinghome.domain.chat.controller.app;
 
 import com.careconnect.nursinghome.domain.chat.dto.ChatMessageDto;
 import com.careconnect.nursinghome.domain.chat.dto.ChatRoomRequestDto;
@@ -16,12 +16,13 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/chat")
-public class ChatController {
+@RequestMapping("/api/v1/app/chat") // 👈 /app 추가
+public class ChatAppController {
 
     private final ChatService chatService;
     private final SimpMessagingTemplate messagingTemplate;
 
+    // 보호자가 채팅방 생성 (상담 시작)
     @PostMapping("/rooms")
     public ApiResponse<ChatRoomResponseDto> createRoom(
             @RequestBody ChatRoomRequestDto dto,
@@ -31,32 +32,20 @@ public class ChatController {
         return ApiResponse.ok(chatService.createRoom(dto));
     }
 
+    // 보호자의 채팅방 목록 조회
     @GetMapping("/rooms")
     public ApiResponse<List<ChatRoomResponseDto>> getRooms(Principal principal) {
         Long memberId = Long.parseLong(principal.getName());
         return ApiResponse.ok(chatService.getRooms(memberId));
     }
 
-    @DeleteMapping("/rooms/{roomId}")
-    public ApiResponse<Void> deleteRoom(@PathVariable Long roomId) {
-        chatService.deleteRoom(roomId);
-        return ApiResponse.ok(null);
-    }
-
-    @PostMapping("/messages")
-    public ApiResponse<ChatMessage> sendMessageRest(
-            @RequestBody ChatMessageDto dto,
-            Principal principal) {
-        Long memberId = Long.parseLong(principal.getName());
-        dto.setMemberId(memberId);
-        return ApiResponse.ok(chatService.sendMessage(dto));
-    }
-
+    // 과거 메시지 내역 조회
     @GetMapping("/rooms/{roomId}/messages")
     public ApiResponse<List<ChatMessage>> getMessages(@PathVariable Long roomId) {
         return ApiResponse.ok(chatService.getMessages(roomId));
     }
 
+    // WebSocket 메시지 전송 (실시간)
     @MessageMapping("/chat/message")
     public void sendMessageWebSocket(ChatMessageDto dto, Principal principal) {
         Long memberId = Long.parseLong(principal.getName());

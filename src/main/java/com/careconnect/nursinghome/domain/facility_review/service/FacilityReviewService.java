@@ -14,4 +14,6 @@ public interface FacilityReviewService {
     void update(Long id, FacilityReviewRequestDto dto);
 
     void delete(Long id);
+
+    void updateAdminReply(Long id, String reply);
 }
