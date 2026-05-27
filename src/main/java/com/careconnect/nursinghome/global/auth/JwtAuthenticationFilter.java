@@ -23,6 +23,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // ⭐ 소셜 로그인 관련 주소와 정적 리소스는 JWT 검사를 하지 않도록 설정!
         return path.startsWith("/login/oauth2") ||
                 path.startsWith("/oauth2") ||
+                path.startsWith("/api/v1/auth/login") ||
+                path.startsWith("/api/v1/app/members/signup") ||
                 path.startsWith("/favicon.ico") ||
                 path.startsWith("/error");
     }

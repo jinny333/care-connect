@@ -28,6 +28,7 @@ public class SecurityConfig {
     private final OAuth2SuccessHandler successHandler;
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate<String, String> redisTemplate;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -47,7 +48,7 @@ public class SecurityConfig {
                         .successHandler(successHandler)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login/**", "/oauth2/**", "/api/facility/**", "/api/v1/members/signup", "/api/v1/auth/login").permitAll()
+                        .requestMatchers("/", "/login/**", "/oauth2/**", "/api/facility/**", "/api/v1/app/members/signup", "/api/v1/auth/login").permitAll()
                         .requestMatchers("/api/v1/reservations/**").authenticated()
                         .anyRequest().authenticated()
                 )
@@ -59,7 +60,7 @@ public class SecurityConfig {
                             response.getWriter().write("{\"message\": \"인증에 실패했습니다. 다시 로그인해주세요.\"}");
                         })
                 )
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
