@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -15,16 +16,15 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final RedisTemplate<String, String> redisTemplate; // Redis 주입!
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+    protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
         // ⭐ 소셜 로그인 관련 주소와 정적 리소스는 JWT 검사를 하지 않도록 설정!
         return path.startsWith("/login/oauth2") ||
-                path.startsWith("/oauth2") ||
+                path.startsWith("/oauth2") ||     // 👈 [추가] 일반 로그인 주소 패스!
+                path.startsWith("/api/v1/app/members/signup") || // 👈 [추가] 일반 회원가입 주소 패스!
                 path.startsWith("/api/v1/auth/login") ||
-                path.startsWith("/api/v1/app/members/signup") ||
                 path.startsWith("/favicon.ico") ||
                 path.startsWith("/error");
     }

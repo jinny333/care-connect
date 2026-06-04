@@ -39,7 +39,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -70,9 +70,10 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowedOriginPatterns(List.of(
-                "http://localhost:*",
-                "https://*.ngrok-free.app",  // 서진이의 ngrok 주소를 포함한 모든 ngrok 허용
-                "https://*.ngrok-free.dev"   // 혹시 모를 dev 도메인도 추가
+                "http://localhost:3000",       // React 기본 포트
+                "http://localhost:5173",       // Vite / Vue 기본 포트
+                "http://localhost:8000"        // 혹시 모를 다른 포트 대비
+                // "https://*.vercel.app"      // 나중에 프론트 배포하면 배포 주소도 여기에 추가!
         ));
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
@@ -83,5 +84,13 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
+    }
+
+    public JwtTokenProvider getJwtTokenProvider() {
+        return jwtTokenProvider;
+    }
+
+    public RedisTemplate<String, String> getRedisTemplate() {
+        return redisTemplate;
     }
 }
